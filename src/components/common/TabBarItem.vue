@@ -14,13 +14,18 @@ export default {
   },
   data() {
     return {
-      isActive: true,
-    };
+
+    }
+  },
+  computed: {
+    isActive () {
+       return this.$route.path.indexOf(this.path)!== -1
+    }
   },
   methods: {
     itemBtn() {
-      this.$router.push(this.path).catch((err) => err);
-      console.log("ddd");
+      this.$router.push(this.path).catch((err) => err)
+      console.log("没跳转");
     },
   },
 };
