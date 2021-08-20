@@ -1,21 +1,32 @@
 <template>
-  <div class="tab-bar-item">
-     <slot></slot>
+  <div class="tab-bar-item" v-on:click="itemBtn">
+    <div v-if="!isActive"><slot name="item-img"></slot></div>
+    <div v-else><slot name="item-icon-img"></slot></div>
+    <div :class="{ active: isActive }"><slot name="item-text"></slot></div>
   </div>
 </template>
 
 <script>
 export default {
   name: "TabBarItem",
+  props: {
+    path: String,
+  },
   data() {
     return {
+      isActive: true,
     };
   },
-  components: {},
+  methods: {
+    itemBtn() {
+      this.$router.push(this.path).catch((err) => err);
+      console.log("ddd");
+    },
+  },
 };
 </script>
 
-<style>
+<style scoped>
 .tab-bar-item {
   /* 自适应 均等分 */
   flex: 1;
@@ -31,5 +42,8 @@ export default {
   /*取消图片下面自带的3px，使文字和图片紧挨着*/
   vertical-align: middle;
   margin-bottom: 2px;
+}
+.active {
+  color: magenta;
 }
 </style>

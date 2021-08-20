@@ -1,31 +1,18 @@
 <template>
   <div id="app">
-     <tab-bar>
-       <tab-bar-item>
-         <img slot="item_icon_imge" src="@/assets/img/tabbar/icon_home.svg" alt="">
-         <div>首页</div>
-       </tab-bar-item>
-       <tab-bar-item>
-         <img slot="item_icon_imge" src="@/assets/img/tabbar/icon_categary.svg" alt="">
-         <div>分类</div>
-       </tab-bar-item>
-    
-     </tab-bar>
+    <main-tab-bar></main-tab-bar>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-import TabBar from './components/common/TabBar.vue';
-import TabBarItem from './components/common/TabBarItem.vue';
-import MainTabBar from './components/comtent/MainTabBar.vue';
-
+import MainTabBar from '@/components/comtent/MainTabBar'
 export default {
   name: "App",
-  components: {TabBar, TabBarItem, MainTabBar},
+  components: {MainTabBar},
 };
 </script>
 
 <style>
-@import "assets/css/normalize.css";
-
+@import "assets/css/normalize.css"
 </style>

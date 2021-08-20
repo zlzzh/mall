@@ -1,6 +1,6 @@
 <template>
   <div id="tab-bar">
-    <slot></slot>
+     <slot></slot>
   </div>
 </template>
 
@@ -10,7 +10,8 @@ export default {
   data() {
     return {};
   },
-  components: {},
+  components: {
+  },
 };
 </script>
 
@@ -27,5 +28,6 @@ export default {
   /*tab-bar分割线阴影*/
   box-shadow: 0 -3px 1px rgba(100, 100, 100, 0.1);
 }
+
 
 </style>
