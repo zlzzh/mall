@@ -2,10 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 
 Vue.use(VueRouter)
-const Home = () => import('../views/home/Home')
-const Categary = () => import('../views/categary/Categary')
-const Cart = () => import('../views/cart/Cart.vue')
-const Profile = () => import('../views/profile/Profile.vue')
+
 
 const routes = [
   {
@@ -14,22 +11,27 @@ const routes = [
   },
   {
     path: '/home',
-    components:Home()
+    //components:Home(),愚蠢的写法！！！
+    name: 'home',
+    component:() => import('../views/home/Home')
   }
   ,
   {
     path: '/categary',
-    components:Categary()
+    name: 'categary',
+    component:() => import('../views/categary/Categary')
   }
   ,
   {
     path: '/cart',
-    components:Cart()
+    name: 'cart',
+    component:() => import('../views/cart/Cart')
   }
   ,
   {
     path: '/profile',
-    components:Profile()
+    name: 'profile',
+    component: () => import('../views/profile/Profile')
   }
 ]
 

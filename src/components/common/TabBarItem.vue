@@ -25,7 +25,6 @@ export default {
   methods: {
     itemBtn() {
       this.$router.push(this.path).catch((err) => err)
-      console.log("没跳转");
     },
   },
 };

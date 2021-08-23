@@ -1,12 +1,13 @@
 <template>
   <div id="app">
-    <main-tab-bar></main-tab-bar>
     <router-view></router-view>
+    <main-tab-bar></main-tab-bar>
+
   </div>
 </template>
 
 <script>
-import MainTabBar from '@/components/comtent/MainTabBar'
+import MainTabBar from './components/comtent/MainTabBar'
 export default {
   name: "App",
   components: {MainTabBar},
@@ -14,5 +15,5 @@ export default {
 </script>
 
 <style>
-@import "assets/css/normalize.css"
+@import "assets/css/normalize.css";
 </style>
