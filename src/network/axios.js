@@ -3,7 +3,7 @@ import axios from "axios";
 export function request (config) {
   //1.创建axios实例
   const instance = axios.create({
-    baseURL:'http://123.207.32.32:8000',
+    baseURL:'http://152.136.185.210:7878/api/m5',
     timeout:5000
   })
   //2.1配置axios拦截器 这里面的res和err随便起的名字，use后面传两个参数，前面是成功时候调用，后面是失败时候调用
