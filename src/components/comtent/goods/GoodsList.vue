@@ -1,6 +1,6 @@
 <template>
   <div class="good-list">
-   <GoodsItem v-for="(item,index) in goods" :goodItem="item" @click="goodsItemBtn(index)">
+   <GoodsItem v-for="(item,index) in goods" :goodItem="item" @click.native="goodsItemBtn(index)">
    </GoodsItem>
   </div>
 </template>
@@ -22,7 +22,7 @@ export default {
   },
   methods: {
     goodsItemBtn (index) {
-      console.log(index)
+      this.$emit('goodsItemBtn',index)
     }
   }
 
