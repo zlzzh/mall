@@ -1,5 +1,5 @@
 <template>
- <div class="goods-item">
+ <div class="goods-item" @click="goodsItemBtn">
 
    <img :src="goodItem.show.img" alt="">
    <div class="goods-info">
@@ -25,7 +25,9 @@ export default {
     }
   },
   methods:{
-
+    goodsItemBtn() {
+      this.$router.push('/detail/' + this.goodItem.iid)
+    }
   }
 }
 </script>

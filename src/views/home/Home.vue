@@ -22,8 +22,7 @@
         <HomeRecommend :recommend="recommend"></HomeRecommend>
         <FeatureView></FeatureView>
         <TabControl :titles="['流行','新款','精选']" @tabControl="tabControl" ref="TabControl2"></TabControl>
-        <GoodsList :goods="showGoodsList"
-                   @goodsItemBtn="goodsItemBtn"></GoodsList>
+        <GoodsList :goods="showGoodsList"></GoodsList>
       </BScroll>
 <!--      对BackTop整个组件监听，而且必须加上native属性才生效-->
       <BackTop @click.native="backTopBtn" v-show="isShow"></BackTop>
@@ -89,7 +88,7 @@ export default {
   * */
 
   activated() {
-    console.log(this.currentPosition);
+    //console.log(this.currentPosition);
     //直接to指定位置，并刷新
     this.$refs.scroll.scrollToPosition(this.currentPosition)
     this.$refs.scroll.scroll.refresh()
@@ -101,7 +100,7 @@ export default {
     //延迟获取TabControl的y轴位置
     setTimeout (() => {
       this.currentTabBarNum = -this.$refs.TabControl2.$el.offsetTop
-    },1000)
+    },2000)
 
   },
   methods:{
@@ -144,9 +143,6 @@ export default {
       this.$refs.scroll.scroll.finishPullUp()
       //刷新页面，因为图片都是异步加载，如果加载的数据比计算的速度慢，高度算完了，图片还没加载呢 better-scroll无法确定具体高度，不能滚动
       this.$refs.scroll.scroll.refresh()
-    },
-    goodsItemBtn (index) {
-      console.log(this.currentType,index);
     },
     /*
 * 获取banners和recommend数据

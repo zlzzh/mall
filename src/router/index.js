@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import Detail from "../views/detail/Detail";
 
 Vue.use(VueRouter)
 
@@ -32,6 +33,11 @@ const routes = [
     path: '/profile',
     name: 'profile',
     component: () => import('../views/profile/Profile')
+  },
+  {
+    path: '/detail/:id',
+    name: 'detail',
+    component: ()=> import('../views/detail/Detail')
   }
 ]
 
