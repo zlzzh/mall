@@ -1,32 +1,30 @@
 <template>
-    <div id="home">
-      <nav-bar class="home-nav">
-        <div slot="center">购物街</div>
-      </nav-bar>
-<!--      在navbar下面再写一个TabControl 目的吸顶效果，做一个假导航，监听滑动位置(mounted函数延迟执行，要不获取组件位置时不准，-->
-<!--      有可能网络不好还没加载完 就取y轴位置了)，默认隐藏，当滑动到TabControl时 显示，-->
-<!--      造成一种假象-->
-      <TabControl class="TabControl"
-                  :titles="['流行','新款','精选']"
-                  @tabControl="tabControl"
-                  ref="TabControl1"
-                  v-show="isShowTabBar"
-                  ></TabControl>
-      <BScroll class="content"
-               :currentType="3"
-               ref="scroll"
-               @positionBtn="positionBtn"
-               :current-load="true"
-               @pullingUp="pullingUp">
-        <HomeSwiper v-bind:banners="banners"></HomeSwiper>
-        <HomeRecommend :recommend="recommend"></HomeRecommend>
-        <FeatureView></FeatureView>
-        <TabControl :titles="['流行','新款','精选']" @tabControl="tabControl" ref="TabControl2"></TabControl>
-        <GoodsList :goods="showGoodsList"></GoodsList>
-      </BScroll>
-<!--      对BackTop整个组件监听，而且必须加上native属性才生效-->
-      <BackTop @click.native="backTopBtn" v-show="isShow"></BackTop>
-    </div>
+  <div id="home">
+    <nav-bar class="home-nav">
+      <div slot="center">购物街</div>
+    </nav-bar>
+    <!--在navbar下复制一个TabControl 目的吸顶效果，做一个假导航，监听滑动位置默认隐藏，当滑动到TabControl时 显示，造成一种假象-->
+    <TabControl class="TabControl"
+                :titles="['流行','新款','精选']"
+                @tabControl="tabControl"
+                ref="TabControl1"
+                v-show="isShowTabBar"
+    ></TabControl>
+    <BScroll class="content"
+             :currentType="3"
+             ref="scroll"
+             @scrollPosition="scrollPosition"
+             :current-load="true"
+             @pullingUp="pullingUp">
+      <HomeSwiper v-bind:banners="banners" @homeSwiperImageLoad="homeSwiperImageLoad"></HomeSwiper>
+      <HomeRecommend :recommend="recommend"></HomeRecommend>
+      <FeatureView></FeatureView>
+      <TabControl :titles="['流行','新款','精选']" @tabControl="tabControl" ref="TabControl2"></TabControl>
+      <GoodsList :goods="showGoodsList"></GoodsList>
+    </BScroll>
+    <!--对BackTop整个组件监听，而且必须加上native属性才生效-->
+    <BackTop @click.native="backTopBtn" v-show="isBackShow"></BackTop>
+  </div>
 </template>
 
 <script>
@@ -40,7 +38,8 @@ import BScroll from "../../components/common/scroll/BScroll";
 import BackTop from "../../components/comtent/backtop/BackTop";
 
 import GoodsList from "../../components/comtent/goods/GoodsList";
-import {getHomeMultidata, getHomeData } from "../../network/home";
+import {getHomeMultidata, getHomeData} from "../../network/home";
+import {debounce} from "../../common/until";
 
 export default {
   name: "Home",
@@ -54,87 +53,94 @@ export default {
     BScroll,
     BackTop
   },
-  data () {
+  data() {
     return {
-      banners:[],
-      recommend:[],
-      goods:{
-        'pop':{page: 0,list: [] },
-        'new':{page: 0,list: [] },
-        'sell':{page: 0,list: [] }
+      banners: [],
+      recommend: [],
+      goods: {
+        'pop': {page: 0, list: []},
+        'new': {page: 0, list: []},
+        'sell': {page: 0, list: []}
       },
       currentType: 'pop',
-      isShow: false,
-      currentTabBarNum: 0,
+      isBackShow: false,
       isShowTabBar: false,
-      currentPosition: 0
+      tabOffSetTop: 0,
+      currentPositionY: 0
     }
   },
   computed: {
+    // 根据记录的currentType 取对应类型的数组
     showGoodsList() {
       return this.goods[this.currentType].list
     }
   },
-  created() {
-      this.getHomeMultidata();
 
-      this.getHomeData('pop');
-      this.getHomeData('new');
-      this.getHomeData('sell');
+  created() {
+    this.getHomeMultidata();
+
+    this.getHomeData('pop');
+    this.getHomeData('new');
+    this.getHomeData('sell');
 
   },
-  /*
-  * activated和deactivated 函数记录离开时的位置，然后再回到页面的时候 直接toSroll到指定位置
-  * */
 
   activated() {
-    //console.log(this.currentPosition);
-    //直接to指定位置，并刷新
-    this.$refs.scroll.scrollToPosition(this.currentPosition)
-    this.$refs.scroll.scroll.refresh()
+    //1.活跃时 滚动到记录的y坐标位置并refresh
+    this.$refs.scroll.scrollToAppointPosition(this.currentPositionY)
+    this.$refs.scroll.scrollRefresh()
   },
   deactivated() {
-    this.currentPosition = this.$refs.scroll.getScrollY()
+    //1.不活跃时(点击进入detail),记录y坐标
+    this.currentPositionY = this.$refs.scroll.scrollToPositionY()
   },
-  mounted() {
-    //延迟获取TabControl的y轴位置
-    setTimeout (() => {
-      this.currentTabBarNum = -this.$refs.TabControl2.$el.offsetTop
-    },2000)
 
+  mounted() {
+    //1.当首页goodItem图片加载完成 利用防抖函数 refresh 优化性能
+    const refresh = debounce(this.$refs.scroll.scrollRefresh, 500)
+    this.$bus.$on('goodItemImgClick', () => {
+      refresh()
+    })
   },
-  methods:{
-    /*
-    *tabControl 监听事件
-    */
-    //'流行','新款','精选' 分类切换tabbar
+
+  methods: {
+    /*----------监听事件----------*/
+
+    //轮播图加载完 后获取TabControl2 y位置
+    homeSwiperImageLoad() {
+      this.tabOffSetTop = -this.$refs.TabControl2.$el.offsetTop
+
+    },
+    //监听滚动位置
+    scrollPosition(position) {
+      //1.backTop按钮 当滚动位置> 1000时  isShow:ture 显示
+      this.isBackShow = -position.y > 1000
+      //2.假导航  当滚动位置 > tabOffSetTop时 isShowTabBar:true 显示
+      this.isShowTabBar = -position.y > -this.tabOffSetTop
+    },
+
+    //点击 将index赋值给currentType记录点击类型['流行','新款','精选']
     tabControl(index) {
       switch (index) {
-          case 0:
-            this.currentType = 'pop'
+        case 0:
+          this.currentType = 'pop'
           break;
-            case 1:
-              this.currentType = 'new'
+        case 1:
+          this.currentType = 'new'
           break
-          case 2:
-            this.currentType = 'sell'
+        case 2:
+          this.currentType = 'sell'
           break
       }
       //保证两个TabControl记录的index都是一致的 要不划自己记录自己的  就乱了 划下去点击的是流行  上面虚拟的还是新款呢
       this.$refs.TabControl1.currentIndex = index
       this.$refs.TabControl2.currentIndex = index
     },
-    //返回顶部
+    //返回顶部 500毫秒
     backTopBtn() {
       this.$refs.scroll.scroll.scrollTo(0, 0, 500)
     },
-    //监听滚动位置
-    positionBtn(position) {
-      //backTop是否隐藏
-      this.isShow = -position.y > 1000
-      //tabControl是否吸顶
-      this.isShowTabBar = -position.y > -this.currentTabBarNum
-    },
+
     //加载更多
     pullingUp() {
       //根据当前currentType 发送网络请求
@@ -144,9 +150,8 @@ export default {
       //刷新页面，因为图片都是异步加载，如果加载的数据比计算的速度慢，高度算完了，图片还没加载呢 better-scroll无法确定具体高度，不能滚动
       this.$refs.scroll.scroll.refresh()
     },
-    /*
-* 获取banners和recommend数据
-* */
+
+    /*----------网络请求获取banners和recommend----------------*/
     getHomeMultidata() {
       getHomeMultidata().then((res) => {
         //console.log(res.data.data);
@@ -156,12 +161,10 @@ export default {
         console.log(fal)
       })
     },
-    /*
-    * 获取goodData数据
-    * */
+    /*----------网络请求获取goodData------------*/
     getHomeData(type) {
       const page = this.goods[type].page + 1
-      getHomeData(type,page).then(res =>{
+      getHomeData(type, page).then(res => {
         //console.log(res.data.data.list);
         this.goods[type].list.push(...res.data.data.list)
         this.goods[type].page += 1
@@ -176,6 +179,7 @@ export default {
   padding-top: 44px;
   height: 100vh;
 }
+
 .home-nav {
   background-color: magenta;
   color: #FFFFFF;
@@ -186,6 +190,7 @@ export default {
   top: 0;
   z-index: 9;
 }
+
 .TabControl {
   position: fixed;
   left: 0;
@@ -193,6 +198,7 @@ export default {
   top: 44px;
   z-index: 9;
 }
+
 .content {
   height: calc(100% - 93px);
   overflow: hidden;

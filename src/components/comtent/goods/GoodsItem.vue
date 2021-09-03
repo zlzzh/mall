@@ -1,7 +1,7 @@
 <template>
  <div class="goods-item" @click="goodsItemBtn">
 
-   <img :src="goodItem.show.img" alt="">
+   <img :src="showGoodsItem" alt="" @load="goodItemImgClick">
    <div class="goods-info">
      <p>{{goodItem.title}}</p>
      <img src="../../../assets/img/common/price.svg" alt="">
@@ -24,7 +24,16 @@ export default {
       }
     }
   },
+  computed:{
+    showGoodsItem() {
+      return this.goodItem.image || this.goodItem.show.img
+    }
+  },
   methods:{
+    goodItemImgClick() {
+      //$bus 事件总线 类似通知  可以跨组件传递 发送this.$bus.$emit  接收this.$bus.on  $bus需要再main.js里面定义
+      this.$bus.$emit('goodItemImgClick')
+    },
     goodsItemBtn() {
       this.$router.push('/detail/' + this.goodItem.iid)
     }

@@ -20,16 +20,18 @@ export default {
     }
   },
   mounted() {
-    //1.创建BSscroll对象
+    //1.创建scroll对象
     this.scroll=new BScroll (this.$refs.wrapper,{
       probeType: this.currentType,
       pullUpLoad: this.currentLoad,
       click:true,
   })
-    //2.记录监听位置
-    this.scroll.on('scroll',(position) => {
-      this.$emit('positionBtn',position)
-    })
+    //2.监听滚动位置
+    if (this.currentType === 2 || this.currentType === 3) {
+      this.scroll.on('scroll',(position) => {
+        this.$emit('scrollPosition',position)
+      })
+    }
     //3.上拉加载数据
     this.scroll.on('pullingUp', () => {
       this.$emit('pullingUp')
@@ -37,11 +39,16 @@ export default {
 
   },
   methods: {
-    getScrollY () {
-      //有值取y坐标  没值返回0
+    //1.如果scroll有值 再调用refresh 要不容易出现bug 报错
+    scrollRefresh() {
+      this.scroll && this.scroll.refresh()
+    },
+    //2.scroll 有值返回y坐标  没有返回0
+    scrollToPositionY () {
       return this.scroll ? this.scroll.y : 0
     },
-    scrollToPosition (index) {
+    //3.scroll滚动到指定位置appoint
+    scrollToAppointPosition (index) {
       this.scroll.scrollTo(0,index,0)
     }
   }
