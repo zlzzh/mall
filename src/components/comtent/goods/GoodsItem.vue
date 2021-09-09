@@ -32,6 +32,12 @@ export default {
   methods:{
     goodItemImgClick() {
       //$bus 事件总线 类似通知  可以跨组件传递 发送this.$bus.$emit  接收this.$bus.on  $bus需要再main.js里面定义
+      //1.第一种 通过路由判断 不同的路由发出不同的事件  因为首页和详情页都复用了goodsItem，为了刷新互补影响
+      // if(this.$route.path.indexOf('/home')) {
+      //   this.$bus.$emit('homeGoodItemImgClick')
+      // } else if(this.$route.path.indexOf('/detail')) {
+      //   this.$bus.$emit('detailGoodItemImgClick')
+      // }
       this.$bus.$emit('goodItemImgClick')
     },
     goodsItemBtn() {

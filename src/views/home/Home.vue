@@ -39,7 +39,7 @@ import BackTop from "../../components/comtent/backtop/BackTop";
 
 import GoodsList from "../../components/comtent/goods/GoodsList";
 import {getHomeMultidata, getHomeData} from "../../network/home";
-import {debounce} from "../../common/until";
+import {imageLoadMixIN} from "../../common/mixin";
 
 export default {
   name: "Home",
@@ -66,9 +66,11 @@ export default {
       isBackShow: false,
       isShowTabBar: false,
       tabOffSetTop: 0,
-      currentPositionY: 0
+      currentPositionY: 0,
+      imgLoadListener: null
     }
   },
+  mixins: [imageLoadMixIN],
   computed: {
     // 根据记录的currentType 取对应类型的数组
     showGoodsList() {
@@ -93,14 +95,13 @@ export default {
   deactivated() {
     //1.不活跃时(点击进入detail),记录y坐标
     this.currentPositionY = this.$refs.scroll.scrollToPositionY()
+
+    //2.离开时 取消事件总线监听  和详情页互不干扰
+    this.$bus.$off('goodItemImgClick',this.imgLoadListener)
   },
 
   mounted() {
-    //1.当首页goodItem图片加载完成 利用防抖函数 refresh 优化性能
-    const refresh = debounce(this.$refs.scroll.scrollRefresh, 500)
-    this.$bus.$on('goodItemImgClick', () => {
-      refresh()
-    })
+
   },
 
   methods: {

@@ -31,7 +31,7 @@ export default {
   methods: {
     barItemBtn (index) {
       this.currentIndex = index
-      console.log(this.currentIndex);
+      this.$emit('detailNavBarClick',index)
 
     },
     barBackClick () {
