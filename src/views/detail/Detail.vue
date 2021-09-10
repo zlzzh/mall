@@ -114,6 +114,7 @@ export default {
       product.price = this.goods.lowNowPrice
       product.iid = this.$route.params.id
       product.count = 0
+      product.checked = true
       //console.log(product);
       // 不能这样写 必须通过mutations改变state this.$store.state.cartList.push(product)
       this.$store.commit('addToCart',product)

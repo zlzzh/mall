@@ -11,10 +11,10 @@ export default {
     isChecked: {
       type: Boolean,
       default () {
-        return true
+        return false
       }
     }
-  }
+  },
 }
 </script>
 
@@ -26,6 +26,7 @@ export default {
 
 .check {
   background-color: magenta;
-  border: magenta;
+  border: 2px solid magenta;
+
 }
 </style>
