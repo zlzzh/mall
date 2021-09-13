@@ -105,7 +105,7 @@ export default {
       this.$refs.scroll.scroll.scrollTo(0, 0, 500)
     },
     addToCart() {
-      console.log('添加购物车');
+      //console.log('添加购物车');
       //1.添加购物车信息
       const product = {};
       product.image = this.topImage[0];
@@ -115,9 +115,13 @@ export default {
       product.iid = this.$route.params.id
       product.count = 0
       product.checked = true
-      //console.log(product);
       // 不能这样写 必须通过mutations改变state this.$store.state.cartList.push(product)
-      this.$store.commit('addToCart',product)
+      this.$store.dispatch('addToCart',product).then(res => {
+        this.$toast.show(res,2000)
+      })
+
+
+
     }
   },
   created() {

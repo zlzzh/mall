@@ -51,13 +51,13 @@ export default {
       //3.ever 查找数据 必须每一个的checked==true 才返回ture 有一个为false 则返回false
       if (this.$store.state.cartList.length === 0) return false
       else
-      return this.$store.state.cartList.every(item => {return item.checked == true})
+      return this.$store.state.cartList.every(item => {return item.checked === true})
 
     }
   },
   methods: {
     emitCalculate() {
-      console.log('向服务器发送结算信息');
+      this.$toast.show('向服务器发送结算信息',2000)
     },
     checkClick() {
       // 1.判断是否有未选中的按钮

@@ -3,7 +3,8 @@
     <BScroll class="content" ref="scroll">
        <CartListItem v-for="(item,index) in cartList"
                      :itemInfo="item"
-                     :key="index">
+                     :key="index"
+                     @click.native="cartListItem(index)">
        </CartListItem>
     </BScroll>
   </div>
@@ -21,6 +22,11 @@ export default {
   data() {
     return {
       cartList: []
+    }
+  },
+  methods:{
+    cartListItem (index) {
+      console.log('点击了货品ID：',this.cartList[index].iid);
     }
   },
   created() {
